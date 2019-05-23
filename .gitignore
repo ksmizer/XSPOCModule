@@ -39,3 +39,6 @@ local.properties
 .gradletasknamecache
 .gradle/
 build/
+
+# Test files
+*Test.java
