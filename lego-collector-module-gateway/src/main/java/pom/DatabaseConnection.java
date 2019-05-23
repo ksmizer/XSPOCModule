@@ -7,7 +7,21 @@ import java.util.List;
 public class DatabaseConnection {
     Logger logger;
     Connection conn;
+    public DatabaseConnection(Logger thisLogger, Connection thisConn) {
+        logger = thisLogger;
+        conn = thisConn;
+    }
 
+    public DatabaseConnection(Logger thisLogger, String userName, String password, String serverName, String port, String databaseName) {
+        logger = thisLogger;
+        conn = getConnection(userName, password, serverName, port, databaseName);
+    }
+
+    public DatabaseConnection(Logger thisLogger, String userName, String password, String connectionString) {
+        logger = thisLogger;
+        conn = getConnection(userName, password, connectionString);
+    }
+    
     public Connection getConnection(String userName, String password, String serverName, String port, String databaseName){
         if (conn == null) {    
             StringBuilder str = new StringBuilder(255);
