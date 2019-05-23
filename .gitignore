@@ -33,6 +33,7 @@ local.properties
 # Maven related
 */target/
 *.versionsBackup
+*.settings
 
 # Gradle related files and caches
 .gradletasknamecache
