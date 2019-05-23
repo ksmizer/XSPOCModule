@@ -77,6 +77,7 @@ public class DatabaseConnection {
         StringBuilder proc = new StringBuilder(255);
         proc.append("EXEC ");
         proc.append(sproc);
+        proc.append(" ");
         proc.append(String.join(",", parameters));
         String query = proc.toString();
 
