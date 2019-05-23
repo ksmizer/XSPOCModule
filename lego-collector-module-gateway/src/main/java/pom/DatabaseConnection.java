@@ -51,6 +51,16 @@ public class DatabaseConnection {
         return conn;
     }
 
+    public void closeConnection(){
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException ex){
+                logger.error(ex.getMessage());
+            }
+        }
+    }
+
     public List<Point> executeQuery(String query, String[] params) {
         List<Point> points = new ArrayList<Point>();
         ResultSet rs;
