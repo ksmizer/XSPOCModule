@@ -7,6 +7,11 @@ import java.util.List;
 public class DatabaseConnection {
     Logger logger;
     Connection conn;
+    
+    public DatabaseConnection() {
+
+    }
+
     public DatabaseConnection(Logger thisLogger, Connection thisConn) {
         logger = thisLogger;
         conn = thisConn;

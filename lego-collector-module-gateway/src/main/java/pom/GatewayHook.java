@@ -18,10 +18,10 @@ public class GatewayHook extends AbstractGatewayModuleHook {
         context = gatewayContext;
         tagManager = gatewayContext.getTagManager();
     }
-
+    
     @Override
     public void startup(LicenseState licenseState) {
-        
+        context.createExecutionManager("Lego Collector", 8);
     }
 
     @Override
