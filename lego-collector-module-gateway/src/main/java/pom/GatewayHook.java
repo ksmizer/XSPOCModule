@@ -1,5 +1,8 @@
 package pom;
 
+import java.util.concurrent.TimeUnit;
+
+import com.inductiveautomation.ignition.common.execution.ExecutionManager;
 import com.inductiveautomation.ignition.common.licensing.LicenseState;
 import com.inductiveautomation.ignition.common.sqltags.model.TagManager;
 import com.inductiveautomation.ignition.gateway.model.AbstractGatewayModuleHook;
@@ -12,6 +15,7 @@ public class GatewayHook extends AbstractGatewayModuleHook {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private GatewayContext context;
     private TagManager tagManager;
+    private ExecutionManager executionManager;
     
     @Override
     public void setup(GatewayContext gatewayContext) {
@@ -21,12 +25,15 @@ public class GatewayHook extends AbstractGatewayModuleHook {
     
     @Override
     public void startup(LicenseState licenseState) {
-        context.createExecutionManager("Lego Collector", 8);
+        executionManager = context.createExecutionManager("Lego Collector", 8);
+        // Uncomment line below after runnable is created and replace {runnableFunction} with function name
+        // executionManager.registerAtFixedRate("Lego", "Collector", {runnableFunction}, 60000, TimeUnit.SECONDS);
     }
 
     @Override
     public void shutdown() {
-
+        // Also this line
+        // executionManager.unRegister("Lego", "Collector");
     }
 
     @Override
