@@ -2,7 +2,8 @@ package pom;
 
 import org.apache.log4j.Logger;
 import java.sql.*;
-
+import java.util.ArrayList;
+import java.util.List;
 public class DatabaseConnection {
     Logger logger;
     Connection conn;
@@ -50,7 +51,9 @@ public class DatabaseConnection {
         return conn;
     }
 
-    public int executeQuery(String query, String[] params) {
+    public List<Point> executeQuery(String query, String[] params) {
+        List<Point> points = new ArrayList<Point>();
+        ResultSet rs;
         try {
             CallableStatement  ps = conn.prepareCall(query);
             ps.setEscapeProcessing(true);
@@ -59,16 +62,24 @@ public class DatabaseConnection {
                 ps.setString(i+1, params[i]);
             }
             ps.execute();
-            return ps.getInt(1);
+            rs = ps.getResultSet();
+            while (rs.next()) {
+                Point point = new Point();
+                point.Id = rs.getInt("CollectionPointId");
+                point.TagPath = rs.getString("TagName");
+                point.ValidateTagPath = rs.getString("ValidateTagName");
+                point.EffectiveDate = rs.getDate("EffectiveDate");
+                points.add(point);
+            }
 
         } catch (SQLException ex){
             logger.error(ex.getMessage());
         }
         
-        return -1;
+        return points;
     }
 
-    public int executeSProc(String sproc, String[] params) {
+    public List<Point> executeSProc(String sproc, String[] params) {
         String[] parameters = new String[params.length];
         for (int i = 0; i < parameters.length; i++) {
             parameters[i] = "?";
