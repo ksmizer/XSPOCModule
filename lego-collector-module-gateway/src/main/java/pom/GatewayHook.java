@@ -27,7 +27,7 @@ public class GatewayHook extends AbstractGatewayModuleHook {
     public void startup(LicenseState licenseState) {
         executionManager = context.createExecutionManager("Lego Collector", 8);
         // Uncomment line below after runnable is created and replace {runnableFunction} with function name
-        // executionManager.registerAtFixedRate("Lego", "Collector", {runnableFunction}, 60000, TimeUnit.SECONDS);
+        // executionManager.registerAtFixedRate("Lego", "Collector", {runnableFunction}, 600, TimeUnit.SECONDS);
     }
 
     @Override
