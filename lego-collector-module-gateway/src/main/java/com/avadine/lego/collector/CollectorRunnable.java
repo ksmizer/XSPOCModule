@@ -8,7 +8,8 @@ public class CollectorRunnable implements Runnable {
 
     static CollectorDatabaseConnection dc = new CollectorDatabaseConnection();
     static Connection conn = dc.getConnection("legoread", "legoread", "VNSQL01", "2500", "COLLECTOR");
-
+    //Testing
+    
     public static void main(String[] args) {
         Runnable runnable = new CollectorRunnable();
         Thread collector = new Thread(runnable);
