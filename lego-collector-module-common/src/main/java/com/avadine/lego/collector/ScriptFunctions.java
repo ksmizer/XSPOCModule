@@ -5,5 +5,7 @@ package com.avadine.lego.collector;
  */
 public class ScriptFunctions {
 
-    public int[] triggerCollector();
+    public void triggerCollector() {
+        return;
+    };
 }

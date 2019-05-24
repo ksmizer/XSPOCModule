@@ -1,15 +1,20 @@
 package com.avadine.lego.collector;
 
+import java.sql.SQLException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
-
+import com.google.common.collect.Lists;
+import com.inductiveautomation.ignition.common.BundleUtil;
 import com.inductiveautomation.ignition.common.execution.ExecutionManager;
 import com.inductiveautomation.ignition.common.licensing.LicenseState;
 import com.inductiveautomation.ignition.common.script.ScriptManager;
-import com.inductiveautomation.ignition.common.script.hints.PropertiesFileDocProvider;
 import com.inductiveautomation.ignition.common.sqltags.model.TagManager;
 import com.inductiveautomation.ignition.gateway.clientcomm.ClientReqSession;
 import com.inductiveautomation.ignition.gateway.model.AbstractGatewayModuleHook;
 import com.inductiveautomation.ignition.gateway.model.GatewayContext;
+import com.inductiveautomation.ignition.gateway.web.models.ConfigCategory;
+import com.inductiveautomation.ignition.gateway.web.models.IConfigTab;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,8 +74,7 @@ public class GatewayHook extends AbstractGatewayModuleHook {
 
         manager.addScriptModule(
                 "system.lego.triggerCollector",
-                ScriptFunctions.class,
-                new PropertiesFileDocProvider());
+                ScriptFunctions.class);
     }
     
     public TagManager getTagManager() {

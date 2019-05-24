@@ -1,7 +1,7 @@
 package com.avadine.lego.collector.designer;
 
+import com.avadine.lego.collector.ScriptFunctions;
 import com.inductiveautomation.ignition.common.script.ScriptManager;
-import com.inductiveautomation.ignition.common.script.hints.PropertiesFileDocProvider;
 import com.inductiveautomation.ignition.designer.model.AbstractDesignerModuleHook;
 
 public class DesignerHook extends AbstractDesignerModuleHook {
@@ -13,8 +13,7 @@ public class DesignerHook extends AbstractDesignerModuleHook {
 
         manager.addScriptModule(
                 "system.lego.triggerCollector",
-                ScriptFunctions.class,
-                new PropertiesFileDocProvider());
+                ScriptFunctions.class);
     }
 
 }
