@@ -1,7 +1,9 @@
-package pom.client;
+package com.avadine.lego.collector.client;
 
 import com.inductiveautomation.ignition.client.model.ClientContext;
 import com.inductiveautomation.ignition.common.licensing.LicenseState;
+import com.inductiveautomation.ignition.common.script.ScriptManager;
+import com.inductiveautomation.ignition.common.script.hints.PropertiesFileDocProvider;
 import com.inductiveautomation.vision.api.client.AbstractClientModuleHook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,4 +22,14 @@ public class ClientHook extends AbstractClientModuleHook {
         super.shutdown();
     }
 
+    @Override
+    public void initializeScriptManager(ScriptManager manager) {
+        super.initializeScriptManager(manager);
+
+        manager.addScriptModule(
+            "system.example",
+            new ClientScriptModule(),
+            new PropertiesFileDocProvider()
+        );
+    }
 }

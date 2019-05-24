@@ -1,4 +1,4 @@
-package pom;
+package com.avadine.lego.collector;
 
 import org.apache.log4j.Logger;
 import java.sql.*;

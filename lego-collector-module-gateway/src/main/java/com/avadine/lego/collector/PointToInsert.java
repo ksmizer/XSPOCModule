@@ -1,4 +1,4 @@
-package pom;
+package com.avadine.lego.collector;
 
 // import java.text.DateFormat;
 // import java.text.SimpleDateFormat;
