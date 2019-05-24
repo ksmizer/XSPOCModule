@@ -6,6 +6,7 @@ import com.inductiveautomation.ignition.gateway.localdb.persistence.IdentityFiel
 import com.inductiveautomation.ignition.gateway.localdb.persistence.PersistentRecord;
 import com.inductiveautomation.ignition.gateway.localdb.persistence.RecordMeta;
 import com.inductiveautomation.ignition.gateway.localdb.persistence.StringField;
+import com.inductiveautomation.ignition.gateway.localdb.persistence.IntField;
 import com.inductiveautomation.ignition.gateway.web.components.editors.PasswordEditorSource;
 import org.apache.commons.lang.StringUtils;
 
@@ -27,7 +28,7 @@ public class CollectorConfiguration extends PersistentRecord {
     
             
     public static final StringField Server = new StringField(META, "Server", SFieldFlags.SMANDATORY, SFieldFlags.SDESCRIPTIVE);
-    public static final IntegerField Port = new IntegerField(META, "Port", SFieldFlags.SMANDATORY);
+    public static final IntField Port = new IntField(META, "Port", SFieldFlags.SMANDATORY);
     public static final StringField Database = new StringField(META, "Database", SFieldFlags.SMANDATORY);
     public static final StringField Username = new StringField(META, "Username", SFieldFlags.SMANDATORY);
     public static final EncodedStringField Password = new EncodedStringField(META, "Password", SFieldFlags.SMANDATORY);

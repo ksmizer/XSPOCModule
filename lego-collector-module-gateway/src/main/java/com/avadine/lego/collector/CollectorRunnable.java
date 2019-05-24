@@ -1,35 +1,19 @@
 package com.avadine.lego.collector;
 
 import java.io.IOException;
-import java.sql.*;
 import java.util.List;
 import java.util.ArrayList;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.util.Iterator;
 import java.util.Date;
 
-import com.inductiveautomation.ignition.common.TypeUtilities;
 import com.inductiveautomation.ignition.common.model.values.QualifiedValue;
-import com.inductiveautomation.ignition.common.model.values.CommonQualities;
-import com.inductiveautomation.ignition.common.model.values.Quality;
 import com.inductiveautomation.ignition.common.sqltags.model.TagPath;
-import com.inductiveautomation.ignition.common.sqltags.model.types.DataQuality;
-import com.inductiveautomation.ignition.common.sqltags.model.types.DataType;
-import com.inductiveautomation.ignition.common.sqltags.model.types.ExtendedTagType;
-import com.inductiveautomation.ignition.common.sqltags.model.types.TagEditingFlags;
-import com.inductiveautomation.ignition.common.sqltags.model.types.TagType;
-import com.inductiveautomation.ignition.common.script.ScriptManager;
-import com.inductiveautomation.ignition.common.script.hints.PropertiesFileDocProvider;
 import com.inductiveautomation.ignition.common.sqltags.model.TagManager;
-import com.inductiveautomation.ignition.gateway.sqltags.simple.ProviderConfiguration;
-import com.inductiveautomation.ignition.gateway.sqltags.simple.SimpleTagProvider;
-import com.inductiveautomation.ignition.gateway.sqltags.simple.WriteHandler;
 import com.inductiveautomation.ignition.common.sqltags.parser.TagPathParser;
 
 public class CollectorRunnable implements Runnable {
 
     private CollectorDatabaseConnection dc = new CollectorDatabaseConnection();
-    private Connection conn = dc.getConnection("legoread", "legoread", "VNSQL01", "2500", "COLLECTOR");
 
     private TagManager tagManager;
     // private GatewayHook gh = new GatewayHook();
@@ -42,20 +26,27 @@ public class CollectorRunnable implements Runnable {
 
     @Override
     public void run() {
+        Date startTime = new Date();
         List<Point> points = new ArrayList<Point>();
         List<Point> phantomPoints = new ArrayList<Point>();
-        List<PointToInsert> insertionPoints = new ArrayList<PointToInsert>();
         List<TagPath> tagPaths = new ArrayList<TagPath>();
         List<QualifiedValue> values = new ArrayList<QualifiedValue>();
         List<QualifiedValue> badQualities = new ArrayList<QualifiedValue>();
+        PointToInsert insert = new PointToInsert();
+    
 
+        // Gather all Collector points for provided Collector Id
         points = dc.getPoints(171);
 
-        for (Point point : points) {
+        // Iterate through all points and check if they exist on gateway
+        Iterator iterator = points.iterator();
+        while (iterator.hasNext()) {
+            Point point = iterator.next();
             try {
                 TagPath tagPath = parser.parse(point.TagPath);
                 if (tagManager.getTag(tagPath) == null) {
                     phantomPoints.add(point);
+                    iterator.remove();
                 } else {
                     tagPaths.add(tagPath);
                 }
@@ -64,36 +55,38 @@ public class CollectorRunnable implements Runnable {
                 e.printStackTrace();
             }
         }
+        
+        // Remove points that don't exist from List
         for (Point point : phantomPoints) {
             points.remove(point);
         }
 
+        // Read all points for gateway
         values = tagManager.read(tagPaths);
 
+        // Iterate through all points and check if they are good quality
         for (int i = 0; i < values.size()-1; i++) {
             if (!values.get(i).getQuality().isGood()) {
                 badQualities.add(values.get(i));
                 points.remove(i);
             }
         }
-        
+        // Remove points that have bad qualities
         for (QualifiedValue badValue: badQualities) {
             values.remove(badValue);
         }
         
         //call sproc
-        
+        Date endTime = new Date();
+        int duration = Math.toIntExact((endTime.getTime()-startTime.getTime())/1000);
+
         for (int i = 0; i < points.size()-1; i++) {
             //construct PointToInsert objects
-            int id = points.get(i).Id;
-            //Date effectiveDate = new Date();
-            String pointValue = values.get(i).getValue().toString();
-            //int duration
-
-            //PointToInsert insert = new PointToInsert(id, effectiveDate, pointValue, duration);
-            //dc.insertPoint(insert);
+            insert.Id = points.get(i).Id;
+            insert.EffectiveDate = points.get(i).EffectiveDate;
+            insert.PointValue = values.get(i).getValue().toString();
+            insert.Duration = duration;
+            dc.insertPoint(insert);
         }
-
-
     }
 }

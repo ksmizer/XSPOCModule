@@ -19,7 +19,7 @@ public class GatewayHook extends AbstractGatewayModuleHook {
     private GatewayContext context;
     private TagManager tagManager;
     private ExecutionManager executionManager;
-    private final GatewayScriptModule scriptModule = new GatewayScriptModule();
+    private ScriptFunctions scriptModule = new ScriptFunctions();
     
     @Override
     public void setup(GatewayContext gatewayContext) {
@@ -69,16 +69,11 @@ public class GatewayHook extends AbstractGatewayModuleHook {
         super.initializeScriptManager(manager);
 
         manager.addScriptModule(
-                "system.example",
+                "system.lego.triggerCollector",
                 scriptModule,
                 new PropertiesFileDocProvider());
     }
-
-    @Override
-    public Object getRPCHandler(ClientReqSession session, String projectName) {
-        return scriptModule;
-    }
-
+    
     public TagManager getTagManager() {
         return tagManager;
     }

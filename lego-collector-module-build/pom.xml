@@ -75,20 +75,20 @@
                     <moduleName>${project.parent.name}</moduleName>
                     <moduleDescription>${project.description}</moduleDescription>
                     <moduleVersion>1.0.0</moduleVersion>
-                    <requiredIgnitionVersion>7.8.0</requiredIgnitionVersion>
+                    <requiredIgnitionVersion>7.9.0</requiredIgnitionVersion>
 
                     <hooks>
                         <hook>
                             <scope>C</scope>
-                            <hookClass>pom.client.ClientHook</hookClass>
+                            <hookClass>com.avadine.lego.collector.client.ClientHook</hookClass>
                         </hook>
                         <hook>
                             <scope>D</scope>
-                            <hookClass>pom.designer.DesignerHook</hookClass>
+                            <hookClass>com.avadine.lego.collector.designer.DesignerHook</hookClass>
                         </hook>
                         <hook>
                             <scope>G</scope>
-                            <hookClass>pom.GatewayHook</hookClass>
+                            <hookClass>com.avadine.lego.collector.GatewayHook</hookClass>
                         </hook>
                     </hooks>
 

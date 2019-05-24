@@ -1,6 +1,6 @@
 package com.avadine.lego.collector;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class Point {
     public Integer Id;

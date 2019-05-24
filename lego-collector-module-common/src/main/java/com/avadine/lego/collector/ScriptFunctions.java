@@ -1,9 +1,9 @@
 package com.avadine.lego.collector;
 
 /**
- * CollectorBlackBox
+ * ScriptFunctions
  */
-public interface CollectorBlackBox {
+public class ScriptFunctions {
 
     public int[] triggerCollector();
 }

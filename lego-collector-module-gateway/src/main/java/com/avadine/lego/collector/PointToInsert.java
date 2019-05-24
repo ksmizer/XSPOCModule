@@ -12,13 +12,6 @@ public class PointToInsert {
     public String PointValue;
     public int Duration;
 
-    public PointToInsert(int id, Date effectiveDate, String pointValue, int duration) {
-        Id = id;
-        EffectiveDate = effectiveDate;
-        PointValue = pointValue;
-        Duration = duration;
-    }
-
     // **No longer Needed**
     // public String[] getPoint(){
     //     String[] point = new String[4];
