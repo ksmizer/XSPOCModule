@@ -19,7 +19,6 @@ public class GatewayHook extends AbstractGatewayModuleHook {
     private GatewayContext context;
     private TagManager tagManager;
     private ExecutionManager executionManager;
-    private ScriptFunctions scriptModule = new ScriptFunctions();
     
     @Override
     public void setup(GatewayContext gatewayContext) {
@@ -70,7 +69,7 @@ public class GatewayHook extends AbstractGatewayModuleHook {
 
         manager.addScriptModule(
                 "system.lego.triggerCollector",
-                scriptModule,
+                ScriptFunctions.class,
                 new PropertiesFileDocProvider());
     }
     

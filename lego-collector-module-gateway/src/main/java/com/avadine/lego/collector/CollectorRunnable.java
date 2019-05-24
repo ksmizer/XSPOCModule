@@ -41,7 +41,7 @@ public class CollectorRunnable implements Runnable {
         // Iterate through all points and check if they exist on gateway
         Iterator iterator = points.iterator();
         while (iterator.hasNext()) {
-            Point point = iterator.next();
+            Point point = (Point)iterator.next();
             try {
                 TagPath tagPath = parser.parse(point.TagPath);
                 if (tagManager.getTag(tagPath) == null) {

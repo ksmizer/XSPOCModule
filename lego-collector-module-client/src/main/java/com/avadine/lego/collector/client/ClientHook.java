@@ -27,9 +27,8 @@ public class ClientHook extends AbstractClientModuleHook {
         super.initializeScriptManager(manager);
 
         manager.addScriptModule(
-            "system.example",
-            new ClientScriptModule(),
-            new PropertiesFileDocProvider()
-        );
+                "system.lego.triggerCollector",
+                ScriptFunctions.class,
+                new PropertiesFileDocProvider());
     }
 }
