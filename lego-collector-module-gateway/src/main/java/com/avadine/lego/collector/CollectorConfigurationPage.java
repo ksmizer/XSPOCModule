@@ -18,7 +18,7 @@ public class CollectorConfigurationPage extends RecordActionTable<CollectorConfi
 
     transient List<ICalculatedField<CollectorConfiguration>> calcFields;
 
-    public static ConfigCategory CONFIG_CATEGORY = new ConfigCategory("NodeRED", "NodeRED.MenuTitle");
+    public static ConfigCategory CONFIG_CATEGORY = new ConfigCategory("Collector", "Collector.MenuTitle");
     public static IConfigTab MENU_ENTRY = DefaultConfigTab.builder()
             .category(CONFIG_CATEGORY)
             .name("Collector")

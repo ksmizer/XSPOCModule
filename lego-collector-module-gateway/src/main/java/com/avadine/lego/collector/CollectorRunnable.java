@@ -42,6 +42,7 @@ public class CollectorRunnable implements Runnable {
         Iterator iterator = points.iterator();
         while (iterator.hasNext()) {
             Point point = (Point)iterator.next();
+            // Possible multi-threading opportunity
             try {
                 TagPath tagPath = parser.parse(point.TagPath);
                 if (tagManager.getTag(tagPath) == null) {
@@ -54,12 +55,13 @@ public class CollectorRunnable implements Runnable {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+            // End possible
         }
         
         // Remove points that don't exist from List
-        for (Point point : phantomPoints) {
-            points.remove(point);
-        }
+        // for (Point point : phantomPoints) {
+        //     points.remove(point);
+        // }
 
         // Read all points for gateway
         values = tagManager.read(tagPaths);
