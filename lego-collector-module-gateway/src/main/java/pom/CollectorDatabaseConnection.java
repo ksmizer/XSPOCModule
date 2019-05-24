@@ -4,26 +4,38 @@ import org.apache.log4j.Logger;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-public class DatabaseConnection {
+public class CollectorDatabaseConnection {
     Logger logger;
     Connection conn;
-    
-    public DatabaseConnection() {
+
+    public CollectorDatabaseConnection() {
 
     }
 
-    public DatabaseConnection(Logger thisLogger, Connection thisConn) {
+    public CollectorDatabaseConnection(Logger thisLogger, Connection thisConn) {
         logger = thisLogger;
         conn = thisConn;
     }
 
-    public DatabaseConnection(Logger thisLogger, String userName, String password, String serverName, String port, String databaseName) {
+    public CollectorDatabaseConnection(Logger thisLogger, String userName, String password, String serverName, String port, String databaseName) {
         logger = thisLogger;
         conn = getConnection(userName, password, serverName, port, databaseName);
     }
 
-    public DatabaseConnection(Logger thisLogger, String userName, String password, String connectionString) {
+    public CollectorDatabaseConnection(Logger thisLogger, String userName, String password, String connectionString) {
         logger = thisLogger;
+        conn = getConnection(userName, password, connectionString);
+    }
+
+    public CollectorDatabaseConnection(Connection thisConn) {
+        conn = thisConn;
+    }
+
+    public CollectorDatabaseConnection(String userName, String password, String serverName, String port, String databaseName) {
+        conn = getConnection(userName, password, serverName, port, databaseName);
+    }
+
+    public CollectorDatabaseConnection(String userName, String password, String connectionString) {
         conn = getConnection(userName, password, connectionString);
     }
     
@@ -80,16 +92,37 @@ public class DatabaseConnection {
         }
     }
 
-    public List<Point> executeQuery(String query, String[] params) {
-        List<Point> points = new ArrayList<Point>();
-        ResultSet rs;
+    public Integer insertPoint(PointToInsert point) {
+        String query = "EXEC INS_COLL_PT_VALU ?,?,?,?";
+
         try {
             CallableStatement  ps = conn.prepareCall(query);
             ps.setEscapeProcessing(true);
             ps.setQueryTimeout(30);
-            for (int i = 0; i < params.length; i++) {
-                ps.setString(i+1, params[i]);
-            }
+            ps.setInt("CollectionPointId", point.Id);
+            ps.setDate("EffectiveDateTime", point.EffectiveDate);
+            ps.setString("CollectionPointValueText", point.PointValue);
+            ps.setInt("DurationSeconds", point.Duration);
+            ps.execute();
+            return ps.getInt(1);
+
+        } catch (SQLException ex){
+            logger.error(ex.getMessage());
+        }
+        
+        return -1;
+    }
+
+    public List<Point> getPoints(Integer collectionSourceId) {
+        ResultSet rs;
+        List<Point> points = new ArrayList<Point>();
+        String query = "EXEC GET_COLL_PT_TO_CLCT ?";
+        
+        try {
+            CallableStatement  ps = conn.prepareCall(query);
+            ps.setEscapeProcessing(true);
+            ps.setQueryTimeout(30);
+            ps.setInt("CollectionSourceId", collectionSourceId);
             ps.execute();
             rs = ps.getResultSet();
             while (rs.next()) {
@@ -106,21 +139,5 @@ public class DatabaseConnection {
         }
         
         return points;
-    }
-
-    public List<Point> executeSProc(String sproc, String[] params) {
-        String[] parameters = new String[params.length];
-        for (int i = 0; i < parameters.length; i++) {
-            parameters[i] = "?";
-        }
-        
-        StringBuilder proc = new StringBuilder(255);
-        proc.append("EXEC ");
-        proc.append(sproc);
-        proc.append(" ");
-        proc.append(String.join(",", parameters));
-        String query = proc.toString();
-
-        return executeQuery(query, params);
     }
 }
