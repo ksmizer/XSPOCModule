@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - CollectorRunnable",
+            "request": "launch",
+            "mainClass": "com.avadine.lego.collector.CollectorRunnable",
+            "projectName": "lego-collector-module-gateway"
+        }
+    ]
+}
