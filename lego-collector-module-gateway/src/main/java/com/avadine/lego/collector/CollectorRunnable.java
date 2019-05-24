@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.List;
 import java.util.ArrayList;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import com.inductiveautomation.ignition.common.TypeUtilities;
 import com.inductiveautomation.ignition.common.model.values.QualifiedValue;
@@ -26,16 +29,22 @@ import com.inductiveautomation.ignition.common.sqltags.parser.TagPathParser;
 public class CollectorRunnable implements Runnable {
 
     private CollectorDatabaseConnection dc = new CollectorDatabaseConnection();
-    private GatewayHook gh = new GatewayHook();
-    private TagPathParser parser = new TagPathParser();
-
     private Connection conn = dc.getConnection("legoread", "legoread", "VNSQL01", "2500", "COLLECTOR");
-    private TagManager tagManager = gh.getTagManager();
+
+    private TagManager tagManager;
+    // private GatewayHook gh = new GatewayHook();
+    private TagPathParser parser = new TagPathParser();
+    // private TagManager tagManager = gh.getTagManager();
+
+    public CollectorRunnable(TagManager newTagManager) { 
+        tagManager = newTagManager;
+    }
 
     @Override
     public void run() {
         List<Point> points = new ArrayList<Point>();
         List<Point> phantomPoints = new ArrayList<Point>();
+        List<PointToInsert> insertionPoints = new ArrayList<PointToInsert>();
         List<TagPath> tagPaths = new ArrayList<TagPath>();
         List<QualifiedValue> values = new ArrayList<QualifiedValue>();
         List<QualifiedValue> badQualities = new ArrayList<QualifiedValue>();
@@ -71,7 +80,20 @@ public class CollectorRunnable implements Runnable {
         for (QualifiedValue badValue: badQualities) {
             values.remove(badValue);
         }
-
+        
         //call sproc
+        
+        for (int i = 0; i < points.size()-1; i++) {
+            //construct PointToInsert objects
+            int id = points.get(i).Id;
+            //Date effectiveDate = new Date();
+            String pointValue = values.get(i).getValue().toString();
+            //int duration
+
+            //PointToInsert insert = new PointToInsert(id, effectiveDate, pointValue, duration);
+            //dc.insertPoint(insert);
+        }
+
+
     }
 }

@@ -25,6 +25,14 @@ public class GatewayHook extends AbstractGatewayModuleHook {
     public void setup(GatewayContext gatewayContext) {
         context = gatewayContext;
         tagManager = gatewayContext.getTagManager();
+
+        try {
+            gatewayContext.getSchemaUpdater().updatePersistentRecords(CollectorConfiguration.META);
+        } catch (SQLException e) {
+            logger.error("Error verifying schemas.", e);
+        }
+
+        BundleUtil.get().addBundle("Collector", GatewayHook.class, "Collector");
     }
     
     @Override
@@ -38,11 +46,22 @@ public class GatewayHook extends AbstractGatewayModuleHook {
     public void shutdown() {
         // Also this line
         // executionManager.unRegister("Lego", "Collector");
+        BundleUtil.get().removeBundle("Collector");
     }
 
     @Override
     public boolean isFreeModule() {
         return true;
+    }
+
+    @Override
+    public List<? extends IConfigTab> getConfigPanels() {
+        return Lists.newArrayList(CollectorConfigurationPage.MENU_ENTRY);
+    }
+
+    @Override
+    public List<ConfigCategory> getConfigCategories() {
+        return Lists.newArrayList(CollectorConfigurationPage.CONFIG_CATEGORY);
     }
 
     @Override

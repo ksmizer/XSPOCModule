@@ -26,39 +26,27 @@ public class CollectorConfiguration extends PersistentRecord {
             .setNounPluralKey("Collector.Noun.Plural");
     
             
-    public static final IdentityField Id = new IdentityField(META, "Id");
-    public static final StringField Name = new StringField(META, "Name", SFieldFlags.SMANDATORY, SFieldFlags.SDESCRIPTIVE);
-    public static final StringField APIToken = new StringField(META, "APIToken", SFieldFlags.SMANDATORY).addValidator(new SValidatorI() {
-        @Override
-        public void onValidate(SFieldMeta field, SRecordInstance instance) throws SException.Validation {
-            if (!instance.isNull(field)) {
-                String val = instance.getString(field);
-
-                if (val.length() != 16) {
-                    throw new SException.Validation("Field " + field + " value must be 16 characters");
-                }
-
-                if (!StringUtils.isAlphanumeric(val)) {
-                    throw new SException.Validation("Field " + field + " value must be alphanumeric");
-                }
-            } else {
-                throw new SException.Validation("Field " + field + " cannot be NULL");
-            }
-        }
-    });
-    public static final EncodedStringField Secret = new EncodedStringField(META, "Secret", SFieldFlags.SMANDATORY);
+    public static final StringField Server = new StringField(META, "Server", SFieldFlags.SMANDATORY, SFieldFlags.SDESCRIPTIVE);
+    public static final IntegerField Port = new IntegerField(META, "Port", SFieldFlags.SMANDATORY);
+    public static final StringField Database = new StringField(META, "Database", SFieldFlags.SMANDATORY);
+    public static final StringField Username = new StringField(META, "Username", SFieldFlags.SMANDATORY);
+    public static final EncodedStringField Password = new EncodedStringField(META, "Password", SFieldFlags.SMANDATORY);
     public static final BooleanField Enabled = new BooleanField(META, "Enabled").setDefault(true);
 
     static {
-        Name.getFormMeta().setFieldNameKey("NodeRED.Name.Name");
-        Name.getFormMeta().setFieldDescriptionKey("NodeRED.Name.Desc");
-        APIToken.getFormMeta().setFieldNameKey("NodeRED.APIToken.Name");
-        APIToken.getFormMeta().setFieldDescriptionKey("NodeRED.APIToken.Desc");
-        Secret.getFormMeta().setFieldNameKey("NodeRED.Secret.Name");
-        Secret.getFormMeta().setFieldDescriptionKey("NodeRED.Secret.Desc");
-        Secret.getFormMeta().setEditorSource(PasswordEditorSource.getSharedInstance());
-        Enabled.getFormMeta().setFieldNameKey("NodeRED.Enabled.Name");
-        Enabled.getFormMeta().setFieldDescriptionKey("NodeRED.Enabled.Desc");
+        Server.getFormMeta().setFieldNameKey("Collector.Server.Name");
+        Server.getFormMeta().setFieldDescriptionKey("Collector.Server.Desc");
+        Port.getFormMeta().setFieldNameKey("Collector.Port.Name");
+        Port.getFormMeta().setFieldDescriptionKey("Collector.Port.Desc");
+        Database.getFormMeta().setFieldNameKey("Collector.Database.Name");
+        Database.getFormMeta().setFieldDescriptionKey("Collector.Database.Desc");
+        Username.getFormMeta().setFieldNameKey("Collector.Username.Name");
+        Username.getFormMeta().setFieldDescriptionKey("Collector.Username.Desc");
+        Password.getFormMeta().setFieldNameKey("Collector.Password.Name");
+        Password.getFormMeta().setFieldDescriptionKey("Collector.Password.Desc");
+        Password.getFormMeta().setEditorSource(PasswordEditorSource.getSharedInstance());
+        Enabled.getFormMeta().setFieldNameKey("Collector.Enabled.Name");
+        Enabled.getFormMeta().setFieldDescriptionKey("Collector.Enabled.Desc");
     }
     
     @Override
