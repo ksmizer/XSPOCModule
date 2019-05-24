@@ -19,9 +19,16 @@ public class CollectorRunnable implements Runnable {
     // private GatewayHook gh = new GatewayHook();
     private TagPathParser parser = new TagPathParser();
     // private TagManager tagManager = gh.getTagManager();
+    private int collectorId;
 
     public CollectorRunnable(TagManager newTagManager) { 
         tagManager = newTagManager;
+        collectorId = 171;
+    }
+
+    public CollectorRunnable(TagManager newTagManager, int newCollectorId) { 
+        tagManager = newTagManager;
+        collectorId = newCollectorId;
     }
 
     @Override
@@ -36,13 +43,14 @@ public class CollectorRunnable implements Runnable {
     
 
         // Gather all Collector points for provided Collector Id
-        points = dc.getPoints(171);
+        points = dc.getPoints(collectorId);
 
         // Iterate through all points and check if they exist on gateway
+        // Possible multi-threading opportunity
+        // Would need threshold to split up points into different forks
         Iterator iterator = points.iterator();
         while (iterator.hasNext()) {
             Point point = (Point)iterator.next();
-            // Possible multi-threading opportunity
             try {
                 TagPath tagPath = parser.parse(point.TagPath);
                 if (tagManager.getTag(tagPath) == null) {
@@ -55,10 +63,10 @@ public class CollectorRunnable implements Runnable {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            // End possible
         }
+        // End possibility
         
-        // Remove points that don't exist from List
+        // Remove points that don't exist from List OLD
         // for (Point point : phantomPoints) {
         //     points.remove(point);
         // }
