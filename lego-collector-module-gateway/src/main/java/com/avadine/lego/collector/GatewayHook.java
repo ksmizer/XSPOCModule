@@ -59,4 +59,8 @@ public class GatewayHook extends AbstractGatewayModuleHook {
     public Object getRPCHandler(ClientReqSession session, String projectName) {
         return scriptModule;
     }
+
+    public TagManager getTagManager() {
+        return tagManager;
+    }
 }
