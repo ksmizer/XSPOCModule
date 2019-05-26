@@ -22,14 +22,14 @@ import simpleorm.utils.SException;
 public class CollectorConfiguration extends PersistentRecord {
     public static final RecordMeta<CollectorConfiguration> META = new RecordMeta<>(
             CollectorConfiguration.class,
-            "CollectorConfiguration"
+            "Collector"
     ).setNounKey("Collector.Noun")
             .setNounPluralKey("Collector.Noun.Plural");
     
-            
+    public static final IdentityField Id = new IdentityField(META, "Id");        
     public static final StringField Server = new StringField(META, "Server", SFieldFlags.SMANDATORY, SFieldFlags.SDESCRIPTIVE);
-    public static final IntField Port = new IntField(META, "Port", SFieldFlags.SMANDATORY);
-    public static final StringField Database = new StringField(META, "Database", SFieldFlags.SMANDATORY);
+    public static final IntField Port = new IntField(META, "Port", SFieldFlags.SMANDATORY).setDefault(2500);
+    public static final StringField Database = new StringField(META, "Database", SFieldFlags.SMANDATORY).setDefault("COLLECTOR");
     public static final StringField Username = new StringField(META, "Username", SFieldFlags.SMANDATORY);
     public static final EncodedStringField Password = new EncodedStringField(META, "Password", SFieldFlags.SMANDATORY);
     public static final BooleanField Enabled = new BooleanField(META, "Enabled").setDefault(true);
@@ -46,8 +46,8 @@ public class CollectorConfiguration extends PersistentRecord {
         Password.getFormMeta().setFieldNameKey("Collector.Password.Name");
         Password.getFormMeta().setFieldDescriptionKey("Collector.Password.Desc");
         Password.getFormMeta().setEditorSource(PasswordEditorSource.getSharedInstance());
-        Enabled.getFormMeta().setFieldNameKey("Collector.Enabled.Name");
-        Enabled.getFormMeta().setFieldDescriptionKey("Collector.Enabled.Desc");
+        Enabled.getFormMeta().setFieldNameKey("Collector.isEnabled.Name");
+        Enabled.getFormMeta().setFieldDescriptionKey("Collector.isEnabled.Desc");
     }
     
     @Override
@@ -55,4 +55,7 @@ public class CollectorConfiguration extends PersistentRecord {
         return META;
     }
     
+    public Long getId() {
+        return getLong(Id);
+    }
 }

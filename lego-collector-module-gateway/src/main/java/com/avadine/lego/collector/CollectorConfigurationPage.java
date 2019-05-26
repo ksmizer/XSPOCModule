@@ -18,13 +18,13 @@ public class CollectorConfigurationPage extends RecordActionTable<CollectorConfi
 
     transient List<ICalculatedField<CollectorConfiguration>> calcFields;
 
-    public static ConfigCategory CONFIG_CATEGORY = new ConfigCategory("Collector", "Collector.MenuTitle");
+    public static ConfigCategory CONFIG_CATEGORY = new ConfigCategory("Lego", "Collector.MenuTitle");
     public static IConfigTab MENU_ENTRY = DefaultConfigTab.builder()
             .category(CONFIG_CATEGORY)
             .name("Collector")
-            .i18n("Collector.Configuration.MenuTitle")
+            .i18n("Collector.Setup.MenuTitle")
             .page(CollectorConfigurationPage.class)
-            .terms("Collector", "Configuration")
+            .terms("Collector")
             .build();
 
     public CollectorConfigurationPage(IConfigPage configPage) {
@@ -43,7 +43,7 @@ public class CollectorConfigurationPage extends RecordActionTable<CollectorConfi
 
     @Override
     protected String getTitleKey() {
-        return "Collector.PageTitle";
+        return "Collector.Setup.PageTitle";
     }
 
     @Override
@@ -58,7 +58,7 @@ public class CollectorConfigurationPage extends RecordActionTable<CollectorConfi
 
                 @Override
                 public String getHeaderKey() {
-                    return "Collector.Enabled.Name";
+                    return "Collector.isEnabled.Name";
                 }
             });
         }
@@ -67,6 +67,6 @@ public class CollectorConfigurationPage extends RecordActionTable<CollectorConfi
 
     @Override
     protected String getNoRowsKey() {
-        return "Collector.NoRows";
+        return "Collector.Setup.NoRows";
     }
 }

@@ -63,19 +63,19 @@ public class GatewayHook extends AbstractGatewayModuleHook {
         return Lists.newArrayList(CollectorConfigurationPage.MENU_ENTRY);
     }
 
-    // @Override
-    // public List<ConfigCategory> getConfigCategories() {
-    //     return Lists.newArrayList(CollectorConfigurationPage.CONFIG_CATEGORY);
+    @Override
+    public List<ConfigCategory> getConfigCategories() {
+        return Lists.newArrayList(CollectorConfigurationPage.CONFIG_CATEGORY);
     }
-// 
+
     // @Override
     // public void initializeScriptManager(ScriptManager manager) {
     //     super.initializeScriptManager(manager);
-// 
-        manager.addScriptModule(
-                "system.lego.triggerCollector",
-                ScriptFunctions.class);
-    }
+
+    //     manager.addScriptModule(
+    //             "system.lego.triggerCollector",
+    //             ScriptFunctions.class);
+    // }
     
     public TagManager getTagManager() {
         return tagManager;

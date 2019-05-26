@@ -39,8 +39,10 @@ public class CollectorRunnable implements Runnable {
         List<TagPath> tagPaths = new ArrayList<TagPath>();
         List<QualifiedValue> values = new ArrayList<QualifiedValue>();
         List<QualifiedValue> badQualities = new ArrayList<QualifiedValue>();
-        PointToInsert insert = new PointToInsert();
+        PointToInsert insert;
     
+
+        dc.getConnection("legoread", "legoread", "VNSQL01", "2500", "COLLECTOR");
 
         // Gather all Collector points for provided Collector Id
         points = dc.getPoints(collectorId);
@@ -51,17 +53,20 @@ public class CollectorRunnable implements Runnable {
         Iterator iterator = points.iterator();
         while (iterator.hasNext()) {
             Point point = (Point)iterator.next();
-            try {
-                TagPath tagPath = parser.parse(point.TagPath);
-                if (tagManager.getTag(tagPath) == null) {
-                    phantomPoints.add(point);
-                    iterator.remove();
-                } else {
-                    tagPaths.add(tagPath);
+            String path = point.TagPath;
+            if (path.startsWith("[")) {
+                try {
+                    TagPath tagPath = parser.parse(path);
+                    if (tagManager.getTag(tagPath) == null) {
+                        phantomPoints.add(point);
+                        iterator.remove();
+                    } else {
+                        tagPaths.add(tagPath);
+                    }
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
         }
         // End possibility
@@ -75,28 +80,33 @@ public class CollectorRunnable implements Runnable {
         values = tagManager.read(tagPaths);
 
         // Iterate through all points and check if they are good quality
-        for (int i = 0; i < values.size()-1; i++) {
+        for (int i = 0; i < values.size(); i++) { // Keoni: For loops should not use {length of list} - 1 unless we want to leave out the last value
             if (!values.get(i).getQuality().isGood()) {
+                // Logging opportunity
                 badQualities.add(values.get(i));
                 points.remove(i);
             }
         }
-        // Remove points that have bad qualities
-        for (QualifiedValue badValue: badQualities) {
-            values.remove(badValue);
-        }
         
+        // Remove points that have bad qualities
+        // for (QualifiedValue badValue: badQualities) {
+        //     values.remove(badValue);
+        // }
+        values.removeAll(badQualities);
+
         //call sproc
         Date endTime = new Date();
         int duration = Math.toIntExact((endTime.getTime()-startTime.getTime())/1000);
 
-        for (int i = 0; i < points.size()-1; i++) {
+        for (int i = 0; i < points.size(); i++) {
             //construct PointToInsert objects
+            insert = new PointToInsert();
             insert.Id = points.get(i).Id;
             insert.EffectiveDate = points.get(i).EffectiveDate;
             insert.PointValue = values.get(i).getValue().toString();
             insert.Duration = duration;
             dc.insertPoint(insert);
         }
+        dc.closeConnection(); // need this so we don't have a memory leak
     }
 }
