@@ -12,11 +12,15 @@ import com.inductiveautomation.ignition.common.sqltags.model.TagManager;
 import com.inductiveautomation.ignition.common.sqltags.parser.TagPathParser;
 import com.inductiveautomation.ignition.gateway.model.GatewayContext;
 
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import simpleorm.dataset.SQuery;
 
 public class CollectorRunnable implements Runnable {
 
     private CollectorDatabaseConnection dc = new CollectorDatabaseConnection();
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private GatewayContext context;
     private TagManager tagManager;
     private TagPathParser parser = new TagPathParser();
@@ -49,14 +53,16 @@ public class CollectorRunnable implements Runnable {
             String username = result.getUsername();
             String password = result.getPassword();
             String connectionString = result.getConnectionString();
+            logger.info("Creating connection to database with the string: " + connectionString);
             dc.getConnection(username, password, connectionString);
+
             // Gather all Collector points for provided Collector Id
-            
             List<Point> points = new ArrayList<Point>();
             List<Point> phantomPoints = new ArrayList<Point>();
             List<TagPath> tagPaths = new ArrayList<TagPath>();
+            logger.info("Gathering points");
             points = dc.getPoints(collectorId);
-    
+            logger.info("Points gathered");
             // Iterate through all points and check if they exist on gateway
             // Possible multi-threading opportunity
             // Would need threshold to split up points into different forks
@@ -95,7 +101,7 @@ public class CollectorRunnable implements Runnable {
             // Iterate through all points and check if they are good quality
             for (int i = 0; i < values.size(); i++) { // Keoni: For loops should not use {length of list} - 1 unless we want to leave out the last value
                 if (!values.get(i).getQuality().isGood()) {
-                    // Logging opportunity
+                    logger.warn("Collector Point: " + tagPaths.get(i) + " does not have Good quality. Skipping this tag.");
                     badQualities.add(values.get(i));
                     points.remove(i);
                 }
@@ -113,13 +119,16 @@ public class CollectorRunnable implements Runnable {
     
             for (int i = 0; i < points.size(); i++) {
                 //construct PointToInsert objects
+                logger.info("Creating point to insert with the ID: " + points.get(i).Id);
                 PointToInsert insert = new PointToInsert();
                 insert.Id = points.get(i).Id;
                 insert.EffectiveDate = points.get(i).EffectiveDate;
                 insert.PointValue = values.get(i).getValue().toString();
                 insert.Duration = duration;
-                dc.insertPoint(insert);
+                logger.info("Inserting point with new value: " + insert.PointValue);
+                // dc.insertPoint(insert);
             }
+            logger.info("Closing connection");
             dc.closeConnection(); // need this so we don't have a memory leak
         }
     }
