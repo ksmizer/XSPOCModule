@@ -28,8 +28,8 @@ public class CollectorConfiguration extends PersistentRecord {
     
     public static final IdentityField Id = new IdentityField(META, "Id");        
     public static final StringField Server = new StringField(META, "Server", SFieldFlags.SMANDATORY, SFieldFlags.SDESCRIPTIVE);
-    public static final IntField Port = new IntField(META, "Port", SFieldFlags.SMANDATORY).setDefault(2500);
-    public static final StringField Database = new StringField(META, "Database", SFieldFlags.SMANDATORY).setDefault("COLLECTOR");
+    public static final IntField Port = new IntField(META, "Port", SFieldFlags.SMANDATORY);
+    public static final StringField Database = new StringField(META, "Database", SFieldFlags.SMANDATORY);
     public static final StringField Username = new StringField(META, "Username", SFieldFlags.SMANDATORY);
     public static final EncodedStringField Password = new EncodedStringField(META, "Password", SFieldFlags.SMANDATORY);
     public static final BooleanField Enabled = new BooleanField(META, "Enabled").setDefault(true);
@@ -57,5 +57,33 @@ public class CollectorConfiguration extends PersistentRecord {
     
     public Long getId() {
         return getLong(Id);
+    }
+
+    public String getServer() {
+        return getString(Server);
+    }
+
+    public String getDatabase() {
+        return getString(Database);
+    }
+
+    public String getUsername() {
+        return getString(Username);
+    }
+
+    public String getPassword() {
+        return getString(Password);
+    }
+
+    public String getPort() {
+        return getString(Port);
+    }
+
+    public String getConnectionString() {
+        return "jdbs:sqlserver://" + getServer() + "\\MSSQLSERVER:" + getPort() + ";databaseName=" + getDatabase();
+    }
+
+    public Boolean getEnabled() {
+        return getBoolean(Enabled);
     }
 }

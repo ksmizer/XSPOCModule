@@ -1,0 +1,8 @@
+com\avadine\lego\collector\PointToInsert.class
+com\avadine\lego\collector\CollectorConfiguration.class
+com\avadine\lego\collector\CollectorConfigurationPage.class
+com\avadine\lego\collector\CollectorDatabaseConnection.class
+com\avadine\lego\collector\CollectorRunnable.class
+com\avadine\lego\collector\CollectorConfigurationPage$1.class
+com\avadine\lego\collector\Point.class
+com\avadine\lego\collector\GatewayHook.class
