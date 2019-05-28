@@ -1,9 +1,10 @@
 package com.avadine.lego.collector;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.RecursiveTask;
 
 import com.inductiveautomation.ignition.common.model.values.QualifiedValue;
@@ -14,39 +15,37 @@ import com.inductiveautomation.ignition.common.sqltags.parser.TagPathParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PointTask extends RecursiveTask {
+public class PointTask extends RecursiveTask<Object> {
 
     private List<Point> points;
     private List<Point> phantomPoints;
     private List<TagPath> tagPaths;
 
     private TagManager tagManager;
-    private TagPathParser parser = new TagPathParser();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Integer threshold;
+    private Date startTime;
+    private static final Integer THRESHOLD = 200;
 
-    public PointTask(TagManager newTagManager, List<Point> pointList, List<Point> phantomPointList, List<TagPath> tagPathsList) {
-        tagManager = newTagManager;
-        points = pointList;
-        phantomPoints = phantomPointList;
-        tagPaths = tagPathsList;
+    public PointTask(TagManager tagManager, Date startTime, List<Point> points, List<Point> phantomPoints, List<TagPath> tagPaths) {
+        this.tagManager = tagManager;
+        this.startTime = startTime;
+        this.points = points;
+        this.phantomPoints = phantomPoints;
+        this.tagPaths = tagPaths;
     }
     
     @Override
-    public List<TagPath> compute() {
-
-        //determine threshold (arbitrary)
-        threshold = 20;
-        //if met, continue
-        if (points.size() < threshold) {
+    public Integer compute() {
+        //if threshold met, continue
+        if (points.size() < THRESHOLD) {
             Iterator<Point> iterator = points.iterator();
             while (iterator.hasNext()) {
                 Point point = iterator.next();
                 String path = point.TagPath;
                 if (path.startsWith("[")) {
                     try {
-                        TagPath tagPath = parser.parse(path);
+                        TagPath tagPath = TagPathParser.parse(path);
                         if (tagManager.getTag(tagPath) == null) {
                             phantomPoints.add(point);
                             iterator.remove();
@@ -54,8 +53,8 @@ public class PointTask extends RecursiveTask {
                             tagPaths.add(tagPath);
                         }
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        logger.error("Couldn't parse/find the tagPath");
+                        // e.printStackTrace();
                     }
                 }
             }
@@ -99,12 +98,12 @@ public class PointTask extends RecursiveTask {
             //if not, split again
             int length = points.size();
             int split = length/2;
-            PointTask left = new PointTask(tagManager,points.subList(0,split),phantomPoints.subList(0,split),tagPaths.subList(0,split));
-            PointTask right = new PointTask(tagManager,points.subList(split,length),phantomPoints.subList(split,length),tagPaths.subList(split,length));
+            PointTask left = new PointTask(tagManager,startTime,points.subList(0,split),phantomPoints.subList(0,split),tagPaths.subList(0,split));
+            PointTask right = new PointTask(tagManager,startTime,points.subList(split,length),phantomPoints.subList(split,length),tagPaths.subList(split,length));
             invokeAll(left,right);
         }
 
-        return null;
+        return 1;
         
     }
 }

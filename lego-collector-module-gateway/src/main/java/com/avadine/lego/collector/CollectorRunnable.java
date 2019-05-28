@@ -92,73 +92,11 @@ public class CollectorRunnable implements Runnable {
                 // Iterate through all points and check if they exist on gateway
 
                 ForkJoinPool pool = new ForkJoinPool();
-                PointTask task = new PointTask(tagManager, logger, points, phantomPoints, tagPaths);
+                PointTask task = new PointTask(tagManager, startTime, points, phantomPoints, tagPaths);
+                logger.info("Beginning collection tasks");
                 pool.invoke(task);
+                logger.info("Completed collection tasks");
 
-                // Possible multi-threading opportunity
-                // Would need threshold to split up points into different forks
-                // Iterator<Point> iterator = points.iterator();
-                // while (iterator.hasNext()) {
-                //     Point point = iterator.next();
-                //     String path = point.TagPath;
-                //     if (path.startsWith("[")) {
-                //         try {
-                //             TagPath tagPath = parser.parse(path);
-                //             if (tagManager.getTag(tagPath) == null) {
-                //                 phantomPoints.add(point);
-                //                 iterator.remove();
-                //             } else {
-                //                 tagPaths.add(tagPath);
-                //             }
-                //         } catch (IOException e) {
-                //             // TODO Auto-generated catch block
-                //             e.printStackTrace();
-                //         }
-                //     }
-                // }
-                // End possibility
-                
-                // Remove points that don't exist from List OLD
-                // for (Point point : phantomPoints) {
-                //     points.remove(point);
-                // }
-                
-                // List<QualifiedValue> values = new ArrayList<QualifiedValue>();
-                // List<QualifiedValue> badQualities = new ArrayList<QualifiedValue>();
-
-                // // Read all points for gateway
-                // values = tagManager.read(tagPaths);
-        
-                // // Iterate through all points and check if they are good quality
-                // for (int i = 0; i < values.size(); i++) { // Keoni: For loops should not use {length of list} - 1 unless we want to leave out the last value
-                //     if (!values.get(i).getQuality().isGood()) {
-                //         logger.warn("Collector Point: " + tagPaths.get(i) + " does not have Good quality. Skipping this tag.");
-                //         badQualities.add(values.get(i));
-                //         points.remove(i);
-                //     }
-                // }
-                
-                // // Remove points that have bad qualities
-                // // for (QualifiedValue badValue: badQualities) {
-                // //     values.remove(badValue);
-                // // }
-                // values.removeAll(badQualities);
-        
-                // //call sproc
-                // Date endTime = new Date();
-                // int duration = Math.toIntExact((endTime.getTime()-startTime.getTime())/1000);
-        
-                // for (int i = 0; i < points.size(); i++) {
-                //     //construct PointToInsert objects
-                //     logger.info("Creating point to insert with the ID: " + points.get(i).Id);
-                //     PointToInsert insert = new PointToInsert();
-                //     insert.Id = points.get(i).Id;
-                //     insert.EffectiveDate = points.get(i).EffectiveDate;
-                //     insert.PointValue = values.get(i).getValue().toString();
-                //     insert.Duration = duration;
-                //     logger.info("Inserting point with new value: " + insert.PointValue);
-                //     // dc.insertPoint(insert);
-                // }
                 logger.info("Closing connection");
                 dc.closeConnection(); // need this so we don't have a memory leak
             } catch (NullPointerException e) {
