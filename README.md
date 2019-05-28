@@ -12,6 +12,6 @@ mvn package
 ```
 
 ## Installation
-.modl file in `./lego-collector-module-build/target/lego-collector-module-Ignition-Module-unsigned.modl`
+File Location: `./lego-collector-module-build/target/*.modl`
 
 Install in Ignition Gateway
