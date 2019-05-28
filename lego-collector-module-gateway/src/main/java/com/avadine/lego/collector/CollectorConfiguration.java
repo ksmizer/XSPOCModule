@@ -80,7 +80,7 @@ public class CollectorConfiguration extends PersistentRecord {
     }
 
     public String getConnectionString() {
-        return "jdbs:sqlserver://" + getServer() + "\\MSSQLSERVER:" + getPort() + ";databaseName=" + getDatabase();
+        return "jdbc:sqlserver://" + getServer() + "\\MSSQLSERVER:" + getPort() + ";databaseName=" + getDatabase();
     }
 
     public Boolean getEnabled() {
