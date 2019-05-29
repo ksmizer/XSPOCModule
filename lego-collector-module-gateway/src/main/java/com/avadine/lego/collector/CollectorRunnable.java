@@ -67,10 +67,8 @@ public class CollectorRunnable implements Runnable {
                     logger.info("Collector Id: " + Integer.toString(collectorId));
                     points.addAll(dc.getPoints(collectorId));
                 }
+                dc.resetCall();
                 // logger.info("Points gathered");
-                // Iterate through all points and check if they exist on gateway
-                // Possible multi-threading opportunity
-                // Would need threshold to split up points into different forks
                 Iterator<Point> iterator = points.iterator();
                 while (iterator.hasNext()) {
                     Point point = iterator.next();

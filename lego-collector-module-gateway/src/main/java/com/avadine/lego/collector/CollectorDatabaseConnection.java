@@ -9,6 +9,7 @@ import java.util.List;
 public class CollectorDatabaseConnection {
     Logger logger = LoggerFactory.getLogger(getClass());
     Connection conn;
+    CallableStatement sProc;
 
     public CollectorDatabaseConnection() {
 
@@ -89,6 +90,7 @@ public class CollectorDatabaseConnection {
             try {
                 conn.close();
                 conn = null;
+                sProc = null;
             } catch (SQLException ex){
                 logger.error(ex.getMessage());
             }
@@ -96,19 +98,18 @@ public class CollectorDatabaseConnection {
     }
 
     public Integer insertPoint(PointToInsert point) {
-        String query = "EXEC INS_COLL_PT_VALU ?,?,?,?";
+        if (sProc == null) {
+            prepareInsertPoint();
+        }
 
         try {
-            CallableStatement  ps = conn.prepareCall(query);
-            ps.setEscapeProcessing(true);
-            ps.setQueryTimeout(30);
-            // ps.registerOutParameter("ReturnCode", Types.INTEGER);
-            ps.setInt("CollectionPointId", point.Id);
-            ps.setDate("EffectiveDateTime", point.EffectiveDate);
-            ps.setString("CollectionPointValueText", point.PointValue);
-            ps.setInt("DurationSeconds", point.Duration);
-            ps.execute();
-            // return ps.getInt(1);
+            // sProc.registerOutParameter("ReturnCode", Types.INTEGER);
+            sProc.setInt("CollectionPointId", point.Id);
+            sProc.setDate("EffectiveDateTime", point.EffectiveDate);
+            sProc.setString("CollectionPointValueText", point.PointValue);
+            sProc.setInt("DurationSeconds", point.Duration);
+            sProc.execute();
+            // return sProc.getInt(1);
 
         } catch (SQLException ex){
             logger.error(ex.getMessage());
@@ -120,15 +121,15 @@ public class CollectorDatabaseConnection {
     public List<Point> getPoints(Integer collectionSourceId) {
         ResultSet rs;
         List<Point> points = new ArrayList<Point>();
-        String query = "EXEC GET_COLL_PT_TO_CLCT ?";
         
+        if (sProc == null) {
+            prepareGetPoints();
+        }
+
         try {
-            CallableStatement  ps = conn.prepareCall(query);
-            ps.setEscapeProcessing(true);
-            ps.setQueryTimeout(30);
-            ps.setInt("CollectionSourceId", collectionSourceId);
-            ps.execute();
-            rs = ps.getResultSet();
+            sProc.setInt("CollectionSourceId", collectionSourceId);
+            sProc.execute();
+            rs = sProc.getResultSet();
             while (rs.next()) {
                 Point point = new Point();
                 point.Id = rs.getInt("CollectionPointId");
@@ -148,15 +149,14 @@ public class CollectorDatabaseConnection {
     public List<Integer> getCollectionSourceIds() {
         ResultSet rs;
         List<Integer> ids = new ArrayList<Integer>();
-        // String query = "SELECT [COLL_SRCE_ID],[COLL_SRCE_DESC] FROM [COLLECTOR].[dbo].[COLL_SRCE] WHERE COLL_SRCE_DESC LIKE '%Ignition%'";
-        String query = "SELECT [COLL_SRCE_ID],[COLL_SRCE_DESC] FROM [COLLECTOR].[dbo].[COLL_SRCE] WHERE COLL_SRCE_DESC = 'Ignition Test'";
         
+        if (sProc == null) {
+            prepareGetCollectionSourceIds();
+        }
+
         try {
-            CallableStatement  ps = conn.prepareCall(query);
-            ps.setEscapeProcessing(true);
-            ps.setQueryTimeout(30);
-            ps.execute();
-            rs = ps.getResultSet();
+            sProc.execute();
+            rs = sProc.getResultSet();
             while (rs.next()) {
                 Integer id = rs.getInt("COLL_SRCE_ID");
                 // logger.info("Collector Source: " + rs.getString("COLL_SRCE_DESC"));
@@ -168,5 +168,32 @@ public class CollectorDatabaseConnection {
         }
         
         return ids;
+    }
+
+    public void prepareGetPoints() {
+        prepareCall("EXEC GET_COLL_PT_TO_CLCT ?");
+    }
+
+    public void prepareInsertPoint() {
+        prepareCall("EXEC INS_COLL_PT_VALU ?,?,?,?");
+    }
+    
+    public void prepareGetCollectionSourceIds() {
+        // prepareCall("SELECT [COLL_SRCE_ID],[COLL_SRCE_DESC] FROM [COLLECTOR].[dbo].[COLL_SRCE] WHERE COLL_SRCE_DESC LIKE '%Ignition%'");
+        prepareCall("SELECT [COLL_SRCE_ID],[COLL_SRCE_DESC] FROM [COLLECTOR].[dbo].[COLL_SRCE] WHERE COLL_SRCE_DESC = 'Ignition Test'");
+    }
+
+    public void prepareCall(String query) {
+        try {
+            sProc = conn.prepareCall(query);
+            sProc.setEscapeProcessing(true);
+            sProc.setQueryTimeout(30);
+        } catch (SQLException e) {
+            logger.error("Error preparing call - No Connection Available", e);
+        }
+    }
+
+    public void resetCall() {
+        sProc = null;
     }
 }
