@@ -1,6 +1,7 @@
 package com.avadine.lego.collector;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -57,7 +58,6 @@ public class CollectorRunnable implements Runnable {
             try {
 
                 dc.getConnection(username, password, connectionString);
-    
                 // Gather all Collector points for provided Collector Id
                 List<Point> points = new ArrayList<Point>();
                 List<Point> phantomPoints = new ArrayList<Point>();
@@ -91,26 +91,26 @@ public class CollectorRunnable implements Runnable {
                 
                 // Remove points that don't exist from List OLD
                 // for (Point point : phantomPoints) {
-                //     points.remove(point);
-                // }
-                
-                
-                List<QualifiedValue> values = new ArrayList<QualifiedValue>();
+                    //     points.remove(point);
+                    // }
+                    
+                    
+                    List<QualifiedValue> values = new ArrayList<QualifiedValue>();
                 List<QualifiedValue> badQualities = new ArrayList<QualifiedValue>();
                 // Read all points for gateway
                 values = tagManager.read(tagPaths);
-        
+                
                 // Iterate through all points and check if they are good quality
                 for (int i = 0; i < values.size(); i++) { // Keoni: For loops should not use {length of list} - 1 unless we want to leave out the last value
-                    if (!values.get(i).getQuality().isGood()) {
-                        logger.warn("Collector Point: " + tagPaths.get(i) + " does not have Good quality. Skipping this tag.");
-                        badQualities.add(values.get(i));
-                        points.remove(i);
-                    }
+                if (!values.get(i).getQuality().isGood()) {
+                    logger.warn("Collector Point: " + tagPaths.get(i) + " does not have Good quality. Skipping this tag.");
+                    badQualities.add(values.get(i));
+                    points.remove(i);
                 }
-                
-                // Remove points that have bad qualities
-                // for (QualifiedValue badValue: badQualities) {
+            }
+            
+            // Remove points that have bad qualities
+            // for (QualifiedValue badValue: badQualities) {
                 //     values.remove(badValue);
                 // }
                 values.removeAll(badQualities);
@@ -118,7 +118,7 @@ public class CollectorRunnable implements Runnable {
                 //call sproc
                 Date endTime = new Date();
                 int duration = Math.toIntExact((endTime.getTime()-startTime.getTime())/1000);
-        
+                
                 for (int i = 0; i < points.size(); i++) {
                     //construct PointToInsert objects
                     logger.info("Creating point to insert with the ID: " + points.get(i).Id);
@@ -135,6 +135,7 @@ public class CollectorRunnable implements Runnable {
             } catch (NullPointerException e) {
                 logger.error("Could not create connection", e);
             }
+            
         }
     }
 }

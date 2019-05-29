@@ -1,11 +1,13 @@
 package com.avadine.lego.collector;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 public class CollectorDatabaseConnection {
-    Logger logger;
+    Logger logger = LoggerFactory.getLogger(getClass());
     Connection conn;
 
     public CollectorDatabaseConnection() {
@@ -67,11 +69,12 @@ public class CollectorDatabaseConnection {
     public Connection getConnection(String userName, String password, String connectionString){
         if (conn == null) {    
             String url = connectionString;
-
+            logger.info("Connection is Null, Creating connection");
             try {
                 Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
                 Connection connection = DriverManager.getConnection(url, userName, password);
                 conn = connection;
+                logger.debug(conn.toString());
 
             } catch (ClassNotFoundException ex){
                 logger.error(ex.getMessage());
@@ -79,6 +82,7 @@ public class CollectorDatabaseConnection {
                 logger.error(ex.getMessage());
             }
         }
+        logger.debug(conn.toString());
         return conn;
     }
 
