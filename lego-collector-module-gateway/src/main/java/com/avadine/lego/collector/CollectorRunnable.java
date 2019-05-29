@@ -62,11 +62,12 @@ public class CollectorRunnable implements Runnable {
                 List<Point> points = new ArrayList<Point>();
                 List<Point> phantomPoints = new ArrayList<Point>();
                 List<TagPath> tagPaths = new ArrayList<TagPath>();
-                logger.info("Gathering points");
+                // logger.info("Gathering points");
                 for (Integer collectorId : collectorIds) {
+                    logger.info("Collector Id: " + Integer.toString(collectorId));
                     points.addAll(dc.getPoints(collectorId));
                 }
-                logger.info("Points gathered");
+                // logger.info("Points gathered");
                 // Iterate through all points and check if they exist on gateway
                 // Possible multi-threading opportunity
                 // Would need threshold to split up points into different forks
@@ -97,8 +98,8 @@ public class CollectorRunnable implements Runnable {
                 // for (Point point : phantomPoints) {
                     //     points.remove(point);
                     // }
-                logger.info("tagPaths Length: " + tagPaths.size());
-                logger.info("points Length: " + points.size());
+                // logger.info("tagPaths Length: " + tagPaths.size());
+                // logger.info("points Length: " + points.size());
                     
                 List<QualifiedValue> values = new ArrayList<QualifiedValue>();
                 List<QualifiedValue> badQualities = new ArrayList<QualifiedValue>();
@@ -110,18 +111,18 @@ public class CollectorRunnable implements Runnable {
                 
                 for (int i = 0; i < values.size(); i++) {
                     if (values.get(i).getQuality().isGood()) {
-                        logger.info("Collector Point: " + tagPaths.get(i) + "Has Good quality. Value: " + values.get(i).toString());
+                        // logger.info("Collector Point: " + tagPaths.get(i) + "Has Good quality. Value: " + values.get(i).toString());
                         //construct PointToInsert objects
-                        logger.info("Creating point to insert with the ID: " + points.get(i).Id);
+                        // logger.info("Creating point to insert with the ID: " + points.get(i).Id);
                         PointToInsert insert = new PointToInsert();
                         insert.Id = points.get(i).Id;
                         insert.EffectiveDate = points.get(i).EffectiveDate;
                         insert.PointValue = values.get(i).getValue().toString();
                         insert.Duration = duration;
                         logger.info("Inserting point with new value: " + insert.PointValue);
-                        // dc.insertPoint(insert);
+                        dc.insertPoint(insert);
                     } else {
-                        logger.warn("Collector Point: " + tagPaths.get(i) + " does not have Good quality. Skipping this tag.");
+                        // logger.warn("Collector Point: " + tagPaths.get(i) + " does not have Good quality. Skipping this tag.");
                         badQualities.add(values.get(i));
                     }
                 }

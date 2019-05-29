@@ -69,7 +69,7 @@ public class CollectorDatabaseConnection {
     public Connection getConnection(String userName, String password, String connectionString){
         if (conn == null) {    
             String url = connectionString;
-            logger.info("Connection is Null, Creating connection");
+            // logger.info("Connection is Null, Creating connection");
             try {
                 Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
                 Connection connection = DriverManager.getConnection(url, userName, password);
@@ -102,12 +102,13 @@ public class CollectorDatabaseConnection {
             CallableStatement  ps = conn.prepareCall(query);
             ps.setEscapeProcessing(true);
             ps.setQueryTimeout(30);
+            // ps.registerOutParameter("ReturnCode", Types.INTEGER);
             ps.setInt("CollectionPointId", point.Id);
             ps.setDate("EffectiveDateTime", point.EffectiveDate);
             ps.setString("CollectionPointValueText", point.PointValue);
             ps.setInt("DurationSeconds", point.Duration);
             ps.execute();
-            return ps.getInt(1);
+            // return ps.getInt(1);
 
         } catch (SQLException ex){
             logger.error(ex.getMessage());
@@ -147,7 +148,8 @@ public class CollectorDatabaseConnection {
     public List<Integer> getCollectionSourceIds() {
         ResultSet rs;
         List<Integer> ids = new ArrayList<Integer>();
-        String query = "SELECT [COLL_SRCE_ID],[COLL_SRCE_DESC] FROM [COLLECTOR].[dbo].[COLL_SRCE] WHERE COLL_SRCE_DESC LIKE '%Ignition%'";
+        // String query = "SELECT [COLL_SRCE_ID],[COLL_SRCE_DESC] FROM [COLLECTOR].[dbo].[COLL_SRCE] WHERE COLL_SRCE_DESC LIKE '%Ignition%'";
+        String query = "SELECT [COLL_SRCE_ID],[COLL_SRCE_DESC] FROM [COLLECTOR].[dbo].[COLL_SRCE] WHERE COLL_SRCE_DESC = 'Ignition Test'";
         
         try {
             CallableStatement  ps = conn.prepareCall(query);
@@ -157,6 +159,7 @@ public class CollectorDatabaseConnection {
             rs = ps.getResultSet();
             while (rs.next()) {
                 Integer id = rs.getInt("COLL_SRCE_ID");
+                // logger.info("Collector Source: " + rs.getString("COLL_SRCE_DESC"));
                 ids.add(id);
             }
 

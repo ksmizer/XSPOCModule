@@ -63,19 +63,22 @@ public class GatewayHook extends AbstractGatewayModuleHook {
 
         executionManager = context.createExecutionManager("Lego Collector", threads);
 
-        Integer rangeHigh = ids.size() / threads;
-
+        double size = (double)ids.size()/threads;
+        List<List<Integer>> collectionSourceIds = Lists.partition(ids, (int)Math.ceil(size));
+        logger.info("Collection Source Ids size: " + Integer.toString(collectionSourceIds.size()));
         for (Integer i = 0; i < threads; i++) {
-            Integer increment = i*rangeHigh;
-            List<Integer> collectionSourceIds = ids.subList(increment, increment + rangeHigh);
-            executionManager.registerAtFixedRate("Lego", "Collector - Thread: " + Integer.toString(i+1), new CollectorRunnable(context, collectionSourceIds), 60, TimeUnit.SECONDS);
+            if (i < collectionSourceIds.size()){
+                executionManager.registerAtFixedRate("Lego", "Collector - Thread: " + Integer.toString(i+1), new CollectorRunnable(context, collectionSourceIds.get(i)), 60, TimeUnit.SECONDS);
+            }
         }
     }
 
     @Override
     public void shutdown() {
         // Also this line
-        executionManager.unRegister("Lego", "Collector");
+        for (Integer i = 0; i < threads; i++) {
+            executionManager.unRegister("Lego", "Collector - Thread: " + Integer.toString(i+1));
+        }
         BundleUtil.get().removeBundle("Collector");
     }
 
