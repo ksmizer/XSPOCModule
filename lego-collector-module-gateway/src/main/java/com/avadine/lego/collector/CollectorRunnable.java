@@ -25,18 +25,18 @@ public class CollectorRunnable implements Runnable {
     private GatewayContext context;
     private TagManager tagManager;
     private TagPathParser parser = new TagPathParser();
-    private int collectorId;
+    private List<Integer> collectorIds;
 
     public CollectorRunnable(GatewayContext newContext) { 
         context = newContext;
         tagManager = context.getTagManager();
-        collectorId = 171;
+        collectorIds = new ArrayList<Integer>();
     }
 
-    public CollectorRunnable(GatewayContext newContext, int newCollectorId) { 
+    public CollectorRunnable(GatewayContext newContext, List<Integer> newCollectorIds) { 
         context = newContext;
         tagManager = context.getTagManager();
-        collectorId = newCollectorId;
+        collectorIds = newCollectorIds;
     }
 
     @Override
@@ -63,7 +63,9 @@ public class CollectorRunnable implements Runnable {
                 List<Point> phantomPoints = new ArrayList<Point>();
                 List<TagPath> tagPaths = new ArrayList<TagPath>();
                 logger.info("Gathering points");
-                points = dc.getPoints(collectorId);
+                for (Integer collectorId : collectorIds) {
+                    points.addAll(dc.getPoints(collectorId));
+                }
                 logger.info("Points gathered");
                 // Iterate through all points and check if they exist on gateway
                 // Possible multi-threading opportunity
@@ -85,6 +87,8 @@ public class CollectorRunnable implements Runnable {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
+                    } else {
+                        iterator.remove();
                     }
                 }
                 // End possibility
@@ -93,48 +97,39 @@ public class CollectorRunnable implements Runnable {
                 // for (Point point : phantomPoints) {
                     //     points.remove(point);
                     // }
+                logger.info("tagPaths Length: " + tagPaths.size());
+                logger.info("points Length: " + points.size());
                     
-                    
-                    List<QualifiedValue> values = new ArrayList<QualifiedValue>();
+                List<QualifiedValue> values = new ArrayList<QualifiedValue>();
                 List<QualifiedValue> badQualities = new ArrayList<QualifiedValue>();
                 // Read all points for gateway
                 values = tagManager.read(tagPaths);
-                
-                // Iterate through all points and check if they are good quality
-                for (int i = 0; i < values.size(); i++) { // Keoni: For loops should not use {length of list} - 1 unless we want to leave out the last value
-                if (!values.get(i).getQuality().isGood()) {
-                    logger.warn("Collector Point: " + tagPaths.get(i) + " does not have Good quality. Skipping this tag.");
-                    badQualities.add(values.get(i));
-                    points.remove(i);
-                }
-            }
-            
-            // Remove points that have bad qualities
-            // for (QualifiedValue badValue: badQualities) {
-                //     values.remove(badValue);
-                // }
-                values.removeAll(badQualities);
-        
                 //call sproc
                 Date endTime = new Date();
                 int duration = Math.toIntExact((endTime.getTime()-startTime.getTime())/1000);
                 
-                for (int i = 0; i < points.size(); i++) {
-                    //construct PointToInsert objects
-                    logger.info("Creating point to insert with the ID: " + points.get(i).Id);
-                    PointToInsert insert = new PointToInsert();
-                    insert.Id = points.get(i).Id;
-                    insert.EffectiveDate = points.get(i).EffectiveDate;
-                    insert.PointValue = values.get(i).getValue().toString();
-                    insert.Duration = duration;
-                    logger.info("Inserting point with new value: " + insert.PointValue);
-                    // dc.insertPoint(insert);
+                for (int i = 0; i < values.size(); i++) {
+                    if (values.get(i).getQuality().isGood()) {
+                        logger.info("Collector Point: " + tagPaths.get(i) + "Has Good quality. Value: " + values.get(i).toString());
+                        //construct PointToInsert objects
+                        logger.info("Creating point to insert with the ID: " + points.get(i).Id);
+                        PointToInsert insert = new PointToInsert();
+                        insert.Id = points.get(i).Id;
+                        insert.EffectiveDate = points.get(i).EffectiveDate;
+                        insert.PointValue = values.get(i).getValue().toString();
+                        insert.Duration = duration;
+                        logger.info("Inserting point with new value: " + insert.PointValue);
+                        // dc.insertPoint(insert);
+                    } else {
+                        logger.warn("Collector Point: " + tagPaths.get(i) + " does not have Good quality. Skipping this tag.");
+                        badQualities.add(values.get(i));
+                    }
                 }
                 logger.info("Closing connection");
-                dc.closeConnection(); // need this so we don't have a memory leak
             } catch (NullPointerException e) {
                 logger.error("Could not create connection", e);
             }
+            dc.closeConnection(); // need this so we don't have a memory leak
             
         }
     }

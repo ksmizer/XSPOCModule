@@ -74,12 +74,10 @@ public class CollectorDatabaseConnection {
                 Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
                 Connection connection = DriverManager.getConnection(url, userName, password);
                 conn = connection;
-                logger.debug(conn.toString());
-
             } catch (ClassNotFoundException ex){
                 logger.error(ex.getMessage());
             } catch (SQLException ex){
-                logger.error(ex.getMessage());
+                logger.error("SQL Exception:",ex);
             }
         }
         logger.debug(conn.toString());
@@ -90,6 +88,7 @@ public class CollectorDatabaseConnection {
         if (conn != null) {
             try {
                 conn.close();
+                conn = null;
             } catch (SQLException ex){
                 logger.error(ex.getMessage());
             }
@@ -143,5 +142,28 @@ public class CollectorDatabaseConnection {
         }
         
         return points;
+    }
+
+    public List<Integer> getCollectionSourceIds() {
+        ResultSet rs;
+        List<Integer> ids = new ArrayList<Integer>();
+        String query = "SELECT [COLL_SRCE_ID],[COLL_SRCE_DESC] FROM [COLLECTOR].[dbo].[COLL_SRCE] WHERE COLL_SRCE_DESC LIKE '%Ignition%'";
+        
+        try {
+            CallableStatement  ps = conn.prepareCall(query);
+            ps.setEscapeProcessing(true);
+            ps.setQueryTimeout(30);
+            ps.execute();
+            rs = ps.getResultSet();
+            while (rs.next()) {
+                Integer id = rs.getInt("COLL_SRCE_ID");
+                ids.add(id);
+            }
+
+        } catch (SQLException ex){
+            logger.error(ex.getMessage());
+        }
+        
+        return ids;
     }
 }
