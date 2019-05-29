@@ -7,11 +7,12 @@ Module for Ignition to communicate with the Collector database
 3. [Maven 3.2.1+](https://maven.apache.org/download.cgi)
 
 ## Build
+From the repo folder, run:
 ```
 mvn package
 ```
 
 ## Installation
-File Location: `./lego-collector-module-build/target/*.modl`
+File Location: `./lego-module-build/target/*.modl`
 
 Install in Ignition Gateway

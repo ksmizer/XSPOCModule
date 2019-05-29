@@ -5,23 +5,23 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>LegoCollectorModule</groupId>
-    <artifactId>lego-collector-module</artifactId>
+    <artifactId>lego-module</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
-    <name>lego-collector-module Ignition Module</name>
-    <description>lego-collector-module Ignition Module</description>
+    <name>Lego</name>
+    <description>Lego Ignition Module</description>
 
     <properties>
         <ignition-sdk-version>7.9.0</ignition-sdk-version>
     </properties>
 
     <modules>
-        <module>lego-collector-module-build</module>
-        <module>lego-collector-module-client</module>
-        <module>lego-collector-module-common</module>
-        <module>lego-collector-module-designer</module>
-        <module>lego-collector-module-gateway</module>
+        <module>lego-module-build</module>
+        <module>lego-module-client</module>
+        <module>lego-module-common</module>
+        <module>lego-module-designer</module>
+        <module>lego-module-gateway</module>
     </modules>
 
     <pluginRepositories>
