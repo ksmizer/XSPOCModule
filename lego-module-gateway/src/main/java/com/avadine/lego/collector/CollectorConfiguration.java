@@ -8,7 +8,11 @@ import com.inductiveautomation.ignition.gateway.localdb.persistence.RecordMeta;
 import com.inductiveautomation.ignition.gateway.localdb.persistence.StringField;
 import com.inductiveautomation.ignition.gateway.localdb.persistence.IntField;
 import com.inductiveautomation.ignition.gateway.web.components.editors.PasswordEditorSource;
+
 import org.apache.commons.lang.StringUtils;
+
+import java.util.List;
+import java.util.ArrayList;
 
 import simpleorm.dataset.SFieldFlags;
 import simpleorm.dataset.SFieldMeta;
@@ -23,15 +27,39 @@ public class CollectorConfiguration extends PersistentRecord {
     public static final RecordMeta<CollectorConfiguration> META = new RecordMeta<>(
             CollectorConfiguration.class,
             "Collector"
-    ).setNounKey("Collector.Noun")
-            .setNounPluralKey("Collector.Noun.Plural");
+    )
+    .setNounKey("Collector.Noun")
+    .setNounPluralKey("Collector.Noun.Plural");
     
-    public static final IdentityField Id = new IdentityField(META, "Id");        
+    public static final IdentityField Id = new IdentityField(META, "Id");       
+    
+    /* Use existing connection */
+    public static final StringField Server = new StringField(META, "Server", SFieldFlags.SMANDATORY, SFieldFlags.SDESCRIPTIVE);
+
+    /* Create separate connection */
     public static final StringField Server = new StringField(META, "Server", SFieldFlags.SMANDATORY, SFieldFlags.SDESCRIPTIVE);
     public static final IntField Port = new IntField(META, "Port", SFieldFlags.SMANDATORY);
     public static final StringField Database = new StringField(META, "Database", SFieldFlags.SMANDATORY);
     public static final StringField Username = new StringField(META, "Username", SFieldFlags.SMANDATORY);
     public static final EncodedStringField Password = new EncodedStringField(META, "Password", SFieldFlags.SMANDATORY);
+    
+    /* Collector Ids */
+    public static final StringField CollectorIds = new StringField(META, "CollectorIds").addValidator(new SValidatorI() {
+        @Override
+        public void onValidate(SFieldMeta field, SRecordInstance instance) throws SException.Validation {
+            if (!instance.isNull(field)) {
+                String val = instance.getString(field);
+
+                if (val.startsWith(",")) {
+                    throw new SException.Validation("Field " + field + " cannot start with a comma");
+                }
+
+                if (!StringUtils.isNumericSpace(val.replace(",", ""))) {
+                    throw new SException.Validation("Field " + field + " value must only contain numbers, spaces, and/or commas");
+                }
+            }
+        }
+    });
     public static final BooleanField Enabled = new BooleanField(META, "Enabled").setDefault(true);
 
     static {
@@ -46,6 +74,8 @@ public class CollectorConfiguration extends PersistentRecord {
         Password.getFormMeta().setFieldNameKey("Collector.Password.Name");
         Password.getFormMeta().setFieldDescriptionKey("Collector.Password.Desc");
         Password.getFormMeta().setEditorSource(PasswordEditorSource.getSharedInstance());
+        CollectorIds.getFormMeta().setFieldNameKey("Collector.CollectorIds.Name");
+        CollectorIds.getFormMeta().setFieldDescriptionKey("Collector.CollectorIds.Desc");
         Enabled.getFormMeta().setFieldNameKey("Collector.isEnabled.Name");
         Enabled.getFormMeta().setFieldDescriptionKey("Collector.isEnabled.Desc");
     }
@@ -77,6 +107,19 @@ public class CollectorConfiguration extends PersistentRecord {
 
     public String getPort() {
         return getString(Port);
+    }
+
+    public String getCollectorIdString() {
+        return getString(CollectorIds);
+    }
+
+    public List<Integer> getCollectorIds() {
+        List<Integer> ids = new ArrayList<Integer>();
+        String idString = getCollectorIdString();
+        for (String id : idString.split(",")) {
+            ids.add(Integer.parseInt(id));
+        }
+        return ids;
     }
 
     public String getConnectionString() {
