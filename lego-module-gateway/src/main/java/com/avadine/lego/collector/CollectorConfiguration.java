@@ -1,12 +1,17 @@
 package com.avadine.lego.collector;
 
 import com.inductiveautomation.ignition.gateway.localdb.persistence.BooleanField;
+import com.inductiveautomation.ignition.gateway.localdb.persistence.Category;
 import com.inductiveautomation.ignition.gateway.localdb.persistence.EncodedStringField;
+import com.inductiveautomation.ignition.gateway.localdb.persistence.EnumField;
+import com.inductiveautomation.ignition.gateway.datasource.records.DatasourceRecord;
 import com.inductiveautomation.ignition.gateway.localdb.persistence.IdentityField;
 import com.inductiveautomation.ignition.gateway.localdb.persistence.PersistentRecord;
 import com.inductiveautomation.ignition.gateway.localdb.persistence.RecordMeta;
+import com.inductiveautomation.ignition.gateway.localdb.persistence.ReferenceField;
 import com.inductiveautomation.ignition.gateway.localdb.persistence.StringField;
 import com.inductiveautomation.ignition.gateway.localdb.persistence.IntField;
+import com.inductiveautomation.ignition.gateway.localdb.persistence.LongField;
 import com.inductiveautomation.ignition.gateway.web.components.editors.PasswordEditorSource;
 
 import org.apache.commons.lang.StringUtils;
@@ -34,7 +39,8 @@ public class CollectorConfiguration extends PersistentRecord {
     public static final IdentityField Id = new IdentityField(META, "Id");       
     
     /* Use existing connection */
-    public static final StringField Server = new StringField(META, "Server", SFieldFlags.SMANDATORY, SFieldFlags.SDESCRIPTIVE);
+    public static final LongField DatabaseId = new LongField(META, "DatabaseId");
+    public static final ReferenceField<DatasourceRecord> Existing = new ReferenceField<>(META, DatasourceRecord.META, "Existing", DatabaseId);
 
     /* Create separate connection */
     public static final StringField Server = new StringField(META, "Server", SFieldFlags.SMANDATORY, SFieldFlags.SDESCRIPTIVE);
@@ -62,7 +68,14 @@ public class CollectorConfiguration extends PersistentRecord {
     });
     public static final BooleanField Enabled = new BooleanField(META, "Enabled").setDefault(true);
 
+    static final Category ExistingConnectionCategory = new Category("Collector.ExistingConnectionCategory.Name", 1).include(Existing);
+    static final Category NewConnectionCategory = new Category("Collector.NewConnectionCategory.Name", 2, true).include(Server, Port, Database, Username, Password);
+    static final Category Settings = new Category("Collector.SettingsCategory.Name", 3).include(CollectorIds, Enabled);
+    
+
     static {
+        Existing.getFormMeta().setFieldNameKey("Collector.Existing.Name");
+        Existing.getFormMeta().setFieldDescriptionKey("Collector.Existing.Desc");
         Server.getFormMeta().setFieldNameKey("Collector.Server.Name");
         Server.getFormMeta().setFieldDescriptionKey("Collector.Server.Desc");
         Port.getFormMeta().setFieldNameKey("Collector.Port.Name");
@@ -107,6 +120,14 @@ public class CollectorConfiguration extends PersistentRecord {
 
     public String getPort() {
         return getString(Port);
+    }
+
+    public Boolean hasExistingConnection() {
+        return !isNull(Existing);
+    }
+    
+    public String getDatasource() {
+        return getString(Existing);
     }
 
     public String getCollectorIdString() {

@@ -1,4 +1,4 @@
-package com.avadine.lego.collector.client;
+package com.avadine.lego.client;
 
 import com.avadine.lego.collector.ScriptFunctions;
 import com.inductiveautomation.ignition.client.model.ClientContext;

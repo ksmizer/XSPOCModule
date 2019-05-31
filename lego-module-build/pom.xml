@@ -80,15 +80,15 @@
                     <hooks>
                         <hook>
                             <scope>C</scope>
-                            <hookClass>com.avadine.lego.collector.client.ClientHook</hookClass>
+                            <hookClass>com.avadine.lego.client.ClientHook</hookClass>
                         </hook>
                         <hook>
                             <scope>D</scope>
-                            <hookClass>com.avadine.lego.collector.designer.DesignerHook</hookClass>
+                            <hookClass>com.avadine.lego.designer.DesignerHook</hookClass>
                         </hook>
                         <hook>
                             <scope>G</scope>
-                            <hookClass>com.avadine.lego.collector.GatewayHook</hookClass>
+                            <hookClass>com.avadine.lego.GatewayHook</hookClass>
                         </hook>
                     </hooks>
 

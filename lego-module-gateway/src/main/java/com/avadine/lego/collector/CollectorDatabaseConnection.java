@@ -175,8 +175,7 @@ public class CollectorDatabaseConnection {
     }
     
     public void prepareGetCollectionSourceIds() {
-        // prepareCall("SELECT [COLL_SRCE_ID],[COLL_SRCE_DESC] FROM [COLLECTOR].[dbo].[COLL_SRCE] WHERE COLL_SRCE_DESC LIKE '%Ignition%'");
-        prepareCall("SELECT [COLL_SRCE_ID],[COLL_SRCE_DESC] FROM [COLLECTOR].[dbo].[COLL_SRCE] WHERE COLL_SRCE_DESC = 'Ignition Test'");
+        prepareCall("SELECT [COLL_SRCE_ID],[COLL_SRCE_DESC] FROM [COLLECTOR].[dbo].[COLL_SRCE] WHERE COLL_SRCE_DESC LIKE '%Ignition%'");
     }
 
     public void prepareCall(String query) {

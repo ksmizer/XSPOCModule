@@ -1,9 +1,15 @@
-package com.avadine.lego.collector;
+package com.avadine.lego;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import com.avadine.lego.collector.CollectorConfiguration;
+import com.avadine.lego.collector.CollectorConfigurationPage;
+import com.avadine.lego.collector.CollectorDatabaseConnection;
+import com.avadine.lego.collector.CollectorRunnable;
 import com.google.common.collect.Lists;
 import com.inductiveautomation.ignition.common.BundleUtil;
 import com.inductiveautomation.ignition.common.execution.ExecutionManager;
@@ -11,6 +17,7 @@ import com.inductiveautomation.ignition.common.licensing.LicenseState;
 import com.inductiveautomation.ignition.common.script.ScriptManager;
 import com.inductiveautomation.ignition.common.sqltags.model.TagManager;
 import com.inductiveautomation.ignition.gateway.clientcomm.ClientReqSession;
+import com.inductiveautomation.ignition.gateway.datasource.DatasourceManager;
 import com.inductiveautomation.ignition.gateway.model.AbstractGatewayModuleHook;
 import com.inductiveautomation.ignition.gateway.model.GatewayContext;
 import com.inductiveautomation.ignition.gateway.web.models.ConfigCategory;
@@ -28,6 +35,7 @@ public class GatewayHook extends AbstractGatewayModuleHook {
     private TagManager tagManager;
     private ExecutionManager executionManager;
     private Integer threads = 6;
+    private List<Integer> usedThreads = new ArrayList<Integer>();
     
     @Override
     public void setup(GatewayContext gatewayContext) {
@@ -52,22 +60,44 @@ public class GatewayHook extends AbstractGatewayModuleHook {
 
         for (CollectorConfiguration result : results) {
             if (result.getEnabled()) {
-                String username = result.getUsername();
-                String password = result.getPassword();
-                String connectionString = result.getConnectionString();
-                CollectorDatabaseConnection dc = new CollectorDatabaseConnection(username, password, connectionString);
-                ids.addAll(dc.getCollectionSourceIds());
-                dc.closeConnection();
+                ids = result.getCollectorIds();
+                if (ids.size() == 0){
+                    CollectorDatabaseConnection dc = null;
+                    if (result.hasExistingConnection()) {
+                        String dataSource = result.getDatasource();
+                        DatasourceManager manager = context.getDatasourceManager();
+                        Connection connection = null;
+                        try {
+                            connection = manager.getConnection(dataSource);
+                        } catch (SQLException e) {
+                            logger.error("Error creating connection");
+                        }
+                        if (connection == null) {
+                            continue;
+                        }
+                        dc = new CollectorDatabaseConnection(connection);
+    
+                    } else {
+                        String username = result.getUsername();
+                        String password = result.getPassword();
+                        String connectionString = result.getConnectionString();
+                        dc = new CollectorDatabaseConnection(username, password, connectionString);
+                    }
+                    ids.addAll(dc.getCollectionSourceIds());
+                    dc.closeConnection();
+                }
             }
         }
 
         executionManager = context.createExecutionManager("Lego Collector", threads);
 
         double size = (double)ids.size()/threads;
+
         List<List<Integer>> collectionSourceIds = Lists.partition(ids, (int)Math.ceil(size));
-        logger.info("Collection Source Ids size: " + Integer.toString(collectionSourceIds.size()));
+        
         for (Integer i = 0; i < threads; i++) {
             if (i < collectionSourceIds.size()){
+                usedThreads.add(i);
                 executionManager.registerAtFixedRate("Lego", "Collector - Thread: " + Integer.toString(i+1), new CollectorRunnable(context, collectionSourceIds.get(i)), 60, TimeUnit.SECONDS);
             }
         }
@@ -75,7 +105,7 @@ public class GatewayHook extends AbstractGatewayModuleHook {
 
     @Override
     public void shutdown() {
-        for (Integer i = 0; i < threads; i++) {
+        for (Integer i : usedThreads) {
             executionManager.unRegister("Lego", "Collector - Thread: " + Integer.toString(i+1));
         }
         BundleUtil.get().removeBundle("Collector");

@@ -60,7 +60,6 @@ public class CollectorRunnable implements Runnable {
                 dc.getConnection(username, password, connectionString);
                 // Gather all Collector points for provided Collector Id
                 List<Point> points = new ArrayList<Point>();
-                List<Point> phantomPoints = new ArrayList<Point>();
                 List<TagPath> tagPaths = new ArrayList<TagPath>();
 
                 for (Integer collectorId : collectorIds) {

@@ -1,4 +1,4 @@
-package com.avadine.lego.collector.designer;
+package com.avadine.lego.designer;
 
 import com.avadine.lego.collector.ScriptFunctions;
 import com.inductiveautomation.ignition.common.script.ScriptManager;
