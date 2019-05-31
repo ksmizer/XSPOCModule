@@ -12,7 +12,7 @@ import com.avadine.lego.collector.CollectorConfiguration;
 import com.avadine.lego.collector.CollectorConfigurationPage;
 import com.avadine.lego.collector.CollectorDatabaseConnection;
 import com.avadine.lego.collector.CollectorRunnable;
-import com.avadine.lego.api.ScriptFunctions;
+import com.avadine.lego.service.ScriptFunctions;
 
 import com.inductiveautomation.ignition.common.BundleUtil;
 import com.inductiveautomation.ignition.common.execution.ExecutionManager;
