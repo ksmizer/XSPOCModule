@@ -68,9 +68,9 @@ public class CollectorConfiguration extends PersistentRecord {
     });
     public static final BooleanField Enabled = new BooleanField(META, "Enabled").setDefault(true);
 
-    static final Category ExistingConnectionCategory = new Category("Collector.ExistingConnectionCategory.Name", 1).include(Existing);
-    static final Category NewConnectionCategory = new Category("Collector.NewConnectionCategory.Name", 2, true).include(Server, Port, Database, Username, Password);
-    static final Category Settings = new Category("Collector.SettingsCategory.Name", 3).include(CollectorIds, Enabled);
+    static final Category Settings = new Category("Collector.SettingsCategory.Name", 1).include(CollectorIds, Enabled);
+    static final Category ExistingConnectionCategory = new Category("Collector.ExistingConnectionCategory.Name", 2).include(Existing);
+    static final Category NewConnectionCategory = new Category("Collector.NewConnectionCategory.Name", 3, true).include(Server, Port, Database, Username, Password);
     
 
     static {
