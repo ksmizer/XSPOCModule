@@ -1,4 +1,4 @@
-package com.avadine.lego.api;
+package com.avadine.lego.service;
 
 /**
  * ScriptFunctions to run on Gateway
