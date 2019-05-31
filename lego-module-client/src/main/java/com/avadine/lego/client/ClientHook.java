@@ -1,6 +1,6 @@
 package com.avadine.lego.client;
 
-import com.avadine.lego.collector.ScriptFunctions;
+import com.avadine.lego.ScriptFunctions;
 import com.inductiveautomation.ignition.client.model.ClientContext;
 import com.inductiveautomation.ignition.common.licensing.LicenseState;
 import com.inductiveautomation.ignition.common.script.ScriptManager;

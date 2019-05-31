@@ -6,17 +6,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.collect.Lists;
+
 import com.avadine.lego.collector.CollectorConfiguration;
 import com.avadine.lego.collector.CollectorConfigurationPage;
 import com.avadine.lego.collector.CollectorDatabaseConnection;
 import com.avadine.lego.collector.CollectorRunnable;
-import com.google.common.collect.Lists;
+import com.avadine.lego.api.ScriptFunctions;
+
 import com.inductiveautomation.ignition.common.BundleUtil;
 import com.inductiveautomation.ignition.common.execution.ExecutionManager;
 import com.inductiveautomation.ignition.common.licensing.LicenseState;
 import com.inductiveautomation.ignition.common.script.ScriptManager;
 import com.inductiveautomation.ignition.common.sqltags.model.TagManager;
-import com.inductiveautomation.ignition.gateway.clientcomm.ClientReqSession;
 import com.inductiveautomation.ignition.gateway.datasource.DatasourceManager;
 import com.inductiveautomation.ignition.gateway.model.AbstractGatewayModuleHook;
 import com.inductiveautomation.ignition.gateway.model.GatewayContext;
@@ -125,16 +127,16 @@ public class GatewayHook extends AbstractGatewayModuleHook {
     public List<ConfigCategory> getConfigCategories() {
         return Lists.newArrayList(CollectorConfigurationPage.CONFIG_CATEGORY);
     }
-
-    // @Override
-    // public void initializeScriptManager(ScriptManager manager) {
-    //     super.initializeScriptManager(manager);
-
-    //     manager.addScriptModule(
-    //             "system.lego.triggerCollector",
-    //             ScriptFunctions.class);
-    // }
     
+    @Override
+    public void initializeScriptManager(ScriptManager manager) {
+        super.initializeScriptManager(manager);
+
+        manager.addScriptModule(
+                "system.lego.triggerCollector",
+                ScriptFunctions.class);
+    }
+
     public TagManager getTagManager() {
         return tagManager;
     }

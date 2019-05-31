@@ -1,6 +1,6 @@
 package com.avadine.lego.designer;
 
-import com.avadine.lego.collector.ScriptFunctions;
+import com.avadine.lego.ScriptFunctions;
 import com.inductiveautomation.ignition.common.script.ScriptManager;
 import com.inductiveautomation.ignition.designer.model.AbstractDesignerModuleHook;
 

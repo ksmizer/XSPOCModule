@@ -1,7 +1,7 @@
-package com.avadine.lego.collector;
+package com.avadine.lego.api;
 
 /**
- * ScriptFunctions
+ * ScriptFunctions to run on Gateway
  */
 public class ScriptFunctions {
 
