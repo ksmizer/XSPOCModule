@@ -1,4 +1,4 @@
-# LegoCollectorModule
+# XSPOCModule
 Module for Ignition to communicate with the Collector database
 
 ## Requirements
@@ -13,6 +13,6 @@ mvn package
 ```
 
 ## Installation
-File Location: `./lego-module-build/target/*.modl`
+File Location: `./xspoc-module-build/target/*.modl`
 
 Install in Ignition Gateway

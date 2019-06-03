@@ -4,24 +4,24 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>LegoCollectorModule</groupId>
-    <artifactId>lego-module</artifactId>
+    <groupId>XSPOCModule</groupId>
+    <artifactId>xspoc-module</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
-    <name>Lego</name>
-    <description>Lego Ignition Module</description>
+    <name>xspoc</name>
+    <description>XSPOC Ignition Module</description>
 
     <properties>
         <ignition-sdk-version>7.9.0</ignition-sdk-version>
     </properties>
 
     <modules>
-        <module>lego-module-build</module>
-        <module>lego-module-client</module>
-        <module>lego-module-common</module>
-        <module>lego-module-designer</module>
-        <module>lego-module-gateway</module>
+        <module>xspoc-module-build</module>
+        <module>xspoc-module-client</module>
+        <module>xspoc-module-common</module>
+        <module>xspoc-module-designer</module>
+        <module>xspoc-module-gateway</module>
     </modules>
 
     <pluginRepositories>
